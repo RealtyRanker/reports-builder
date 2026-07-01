@@ -1,0 +1,15 @@
+database:
+  dsn: "postgres://realty_parser:password@realty-postgres:5432/realty_parser?sslmode=disable"
+
+notifier:
+  base_url: "http://users-notifier:8080"
+
+scheduler:
+  poll_interval_seconds: 300
+
+logging:
+  level: "info"
+  file_path: "/var/log/reports-builder/app.log"
+
+metrics:
+  port: 9096
