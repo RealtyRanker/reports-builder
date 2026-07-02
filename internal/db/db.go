@@ -26,7 +26,7 @@ type ReportSubscription struct {
 	MaxPrice int
 	MinArea  float64
 	MaxArea  float64
-	Rooms    []int32
+	Rooms    []int64
 	MinScore int
 
 	MinUndergroundPlace int
@@ -131,7 +131,7 @@ func (db *DB) DeactivateReportSubscriptionByID(ctx context.Context, chatID int64
 func (db *DB) GetFlatsForReport(ctx context.Context, sub ReportSubscription, since, until time.Time) ([]model.FlatRecord, error) {
 	rooms := sub.Rooms
 	if rooms == nil {
-		rooms = []int32{}
+		rooms = []int64{}
 	}
 
 	rows, err := db.pool.Query(ctx,
@@ -153,7 +153,7 @@ func (db *DB) GetFlatsForReport(ctx context.Context, sub ReportSubscription, sin
 		   AND ($7 = 0 OR total_area >= $7)
 		   AND ($8 = 0 OR total_area <= $8)
 		   AND ($9 = 0 OR flat_score >= $9)
-		   AND (cardinality($10::int[]) = 0 OR room_number = ANY($10::int[]))
+		   AND (cardinality($10::bigint[]) = 0 OR room_number = ANY($10::bigint[]))
 		   AND ($11 = 0 OR kitchen_area >= $11)
 		   AND ($12 = 0 OR floor >= $12)
 		   AND ($13 = 0 OR floor <= $13)
