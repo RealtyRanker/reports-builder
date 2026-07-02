@@ -13,6 +13,7 @@ type FlatRecord struct {
 	UndergroundScore          float64   `db:"underground_score"`
 	UndergroundPlace          int       `db:"underground_place"`
 	UndergroundDistanceInfo   string    `db:"underground_distance_info"`
+	UndergroundStations       []string  `db:"underground_stations"`
 	RoomNumber                int       `db:"room_number"`
 	TotalArea                 float64   `db:"total_area"`
 	LivingArea                float64   `db:"living_area"`

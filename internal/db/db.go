@@ -18,8 +18,9 @@ type ReportSubscription struct {
 	ID     int
 	ChatID int64
 
-	DealType string
-	Region   int
+	DealType      string
+	Region        int
+	MetroStations []string
 
 	MinPrice int
 	MaxPrice int
@@ -71,7 +72,7 @@ func (db *DB) GetDueReportSubscriptions(ctx context.Context) ([]ReportSubscripti
 		`SELECT id, chat_id, deal_type, region, min_price, max_price, min_area, max_area, rooms, min_score,
 		        min_underground_place, min_kitchen_area, min_floor, max_floor, min_ceiling_height,
 		        children_required, pets_required, dishwasher_required, conditioner_required,
-		        min_renovation, balcony_required, bathroom_type,
+		        min_renovation, balcony_required, bathroom_type, metro_stations,
 		        period_seconds, last_report_sent_at
 		 FROM report_user_subscriptions
 		 WHERE is_active = TRUE
@@ -88,7 +89,7 @@ func (db *DB) GetDueReportSubscriptions(ctx context.Context) ([]ReportSubscripti
 			&s.MinArea, &s.MaxArea, &s.Rooms, &s.MinScore,
 			&s.MinUndergroundPlace, &s.MinKitchenArea, &s.MinFloor, &s.MaxFloor, &s.MinCeilingHeight,
 			&s.ChildrenRequired, &s.PetsRequired, &s.DishwasherRequired, &s.ConditionerRequired,
-			&s.MinRenovation, &s.BalconyRequired, &s.BathroomType,
+			&s.MinRenovation, &s.BalconyRequired, &s.BathroomType, &s.MetroStations,
 			&s.PeriodSeconds, &s.LastReportSentAt); err != nil {
 			return nil, fmt.Errorf("scanning report subscription: %w", err)
 		}
@@ -135,6 +136,7 @@ func (db *DB) GetFlatsForReport(ctx context.Context, sub ReportSubscription, sin
 
 	rows, err := db.pool.Query(ctx,
 		`SELECT id, link, parsed_at, price, flat_score, underground_score, underground_place, underground_distance_info,
+		        underground_stations,
 		        room_number, total_area, living_area, kitchen_area, floor, max_floor, deposit, deposit_months, comission,
 		        renovation, is_apartments, loggia_count, balcony_count, windows_view,
 		        separated_bathroom_count, combined_bathroom_count,

@@ -3,6 +3,8 @@
 package filter
 
 import (
+	"strings"
+
 	"github.com/asmisnik/reports-builder/internal/db"
 	"github.com/asmisnik/reports-builder/internal/model"
 )
@@ -14,6 +16,9 @@ func Apply(flats []model.FlatRecord, sub db.ReportSubscription) []model.FlatReco
 	result := make([]model.FlatRecord, 0, len(flats))
 	for _, f := range flats {
 		if sub.MinUndergroundPlace > 0 && (f.UndergroundPlace == 0 || f.UndergroundPlace > sub.MinUndergroundPlace) {
+			continue
+		}
+		if len(sub.MetroStations) > 0 && !stationsIntersect(f.UndergroundStations, sub.MetroStations) {
 			continue
 		}
 		if sub.MinRenovation != "" && renovationRank(f.Renovation) < renovationRank(sub.MinRenovation) {
@@ -35,6 +40,19 @@ func Apply(flats []model.FlatRecord, sub db.ReportSubscription) []model.FlatReco
 		result = append(result, f)
 	}
 	return result
+}
+
+// stationsIntersect reports whether any of a flat's underground stations
+// matches (case-insensitively) any station in the subscription's filter set.
+func stationsIntersect(flatStations, filterStations []string) bool {
+	for _, fs := range flatStations {
+		for _, ss := range filterStations {
+			if strings.EqualFold(fs, ss) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // renovationRank ranks renovation levels design > euro > cosmetic > (any
